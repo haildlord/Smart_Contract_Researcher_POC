@@ -1,10 +1,9 @@
 # Incorrect Delegation Struct Assignment Locks Delegators Out of Rewards and Key Functions
 
 ## Metadata
-
-- **Number:** #540
+- **Protocol:** Telcoin Association / telcoin-network
+- **Proof Link:** https://cantina.xyz/code/26d5255b-6f68-46cf-be55-81dd565d9d16/findings/540
 - **Severity:** High
-- **Status:** Duplicate
 - **Created by:** HailTheLord
 - **Created at:** June 30, 2025 at 1:14 AM
 - **Last updated:** August 22, 2025 at 1:14 AM
