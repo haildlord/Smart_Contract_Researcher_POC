@@ -1,8 +1,8 @@
 # H-02 | Reentrancy Vulnerability Allows Bypass of Cooldown, Leading to Unfair Reward Extraction Through Flash Loan
 
-**Author:** HailTheLord
-**Protocol:** Phi
-Proof Link: https://github.com/code-423n4/2024-08-phi-findings/issues/25
+**Author:** HailTheLord 
+**Protocol:** Phi 
+Proof Link: https://github.com/code-423n4/2024-08-phi-findings/issues/25 
 **Severity:** High  
 **Category:** Reentrancy  
 **Type:** Reentrancy (State Update After External Call)  
