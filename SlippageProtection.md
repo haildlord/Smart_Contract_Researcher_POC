@@ -1,12 +1,19 @@
 # M-10 | Missing Slippage Protection in `LendingPool.deposit()`
 
 **Author:** hailthelord 
+
 **Protocol:** RAAC
+
 **Proof Link:** https://codehawks.cyfrin.io/c/2025-02-raac/s/5905
+
 **Severity:** Medium  
+
 **Category:** Slippage  
+
 **Type:** Missing Slippage Protection / Front-Running  
+
 **Protocol:** RAAC Protocol  
+
 **Submitted via:** Cyfrin Audit (2025-02-raac)  
 
 ## Summary
@@ -86,7 +93,3 @@ Add a slippage protection parameter (`minRTokenAmount` or `expected`) to the `de
 - Document the new parameter clearly in the frontend and SDK.
 - Apply similar slippage protection to `withdraw()` and other functions that depend on dynamic indices (e.g. `borrow`, `repay`).
 
----
-
-**Status:** Open  
-**Tags:** `#slippage` `#front-running` `#mev` `#lending` `#rToken` `#medium-severity`
