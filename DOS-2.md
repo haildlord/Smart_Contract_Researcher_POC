@@ -1,12 +1,19 @@
 # M-12 | Exposed `_removeCredIdPerAddress` & `_addCredIdPerAddress` Allows Anyone to Grief Current and Future Cred Holders
 
 **Author:** hailthelord
+
 **Protocol:** Phi
+
 **Proof Link :** https://github.com/code-423n4/2024-08-phi-findings/issues/51
+
 **Severity:** Medium  
+
 **Category:** DoS  
+
 **Type:** Exposed Internal Functions / Griefing  
+
 **Protocol:** Phi Protocol  
+
 **Submitted via:** Code4rena  
 
 ## Summary
@@ -87,8 +94,3 @@ Change both functions from `public` to `internal` so they can only be called fro
 ```
 
 No other changes are required. These functions were clearly intended to be internal helpers.
-
----
-
-**Status:** Open  
-**Tags:** `#dos` `#griefing` `#access-control` `#cred` `#medium-severity`
