@@ -1,12 +1,19 @@
 # H-01 | Anyone Can Add Themselves as a Validator, Enabling Malicious Influence
 
 **Author:** hail_the_lord
+
 **Protocol:** virtuals protocol
+
 **Proof Link:** https://code4rena.com/audits/2025-04-virtuals-protocol/submissions?uid=sg8wuLa4oxV
+
 **Severity:** High  
+
 **Category:** Access Control / Authorization  
+
 **Type:** Missing Access Control (CWE-862)  
+
 **Discovered:** 333 days ago  
+
 **Chain:** Base  
 
 ## Summary
