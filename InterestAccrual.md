@@ -1,11 +1,17 @@
 # Incorrect Interest Accrual and Overestimated totalUsage in DebtToken::mint
 
 **Author:** hailthelord 
+
 **Prototcol:** RAAC
+
 **Proof Link: ** https://codehawks.cyfrin.io/c/2025-02-raac/s/4502
+
 **Severity:** Medium  
+
 **Category:** InterestAccrual  
+
 **Type:** Incorrect Mathematical Calculation (Ray Math + Debt Accounting)  
+
 **Protocol:** Lords Protocol (Lending / crvUSD DebtToken)  
 
 ## Summary
@@ -190,8 +196,3 @@ TotalUsage = TotalUsage.rayMul(index);
 ```
 
 These changes ensure `totalUsage` accurately reflects the current value of all outstanding debt (principal + accrued interest) without artificial inflation.
-
----
-
-**Status:** Open  
-**Tags:** `#interest-accrual` `#debt-token` `#ray-math` `#total-usage` `#lending` `#medium-severity`
