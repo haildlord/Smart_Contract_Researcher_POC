@@ -1,11 +1,17 @@
 # M-13 | Refunds Sent to Incorrect Addresses in Certain Claim Paths
 
 **Author:** hailthelord
+
 **Proof Link :** https://github.com/code-423n4/2024-08-phi-findings/issues/11
+
 **Severity:** Medium  
+
 **Category:** Refund  
+
 **Type:** Incorrect msg.sender Handling / Caller Assumption  
+
 **Protocol:** Phi Protocol  
+
 **Submitted via:** Code4rena  
 
 ## Summary
@@ -53,9 +59,33 @@ Result: Refunds are sent to `PhiNFT1155`, and because there is no mechanism for 
 - Breaks the intended refund logic that the protocol specifically asked auditors to review.
 - Affects both `signatureClaim` and `merkleClaim` paths.
 
-## Proof of Concept
+## Proof of Concept (Full Code)
 
-The warden provided a test (`test_claim_1155_refund`) showing that when a user sends `mintFee + 0.1 ETH` through the `PhiNFT1155` contract’s claim mechanism, the 0.1 ETH refund ends up in the `PhiNFT1155` contract balance instead of being returned to the user.
+Drop this test into `PhiFactory.t.sol`:
+
+```solidity
+function test_claim_1155_refund() public {
+    // SET UP
+    vm.warp(START_TIME + 1);
+    uint256 artId = 1;
+    address artAddress = phiFactory.getArtAddress(artId);
+    vm.warp(START_TIME + 2);
+    bytes memory data = _createSigSignData(true);
+    bytes memory payload = abi.encodePacked(abi.encodeWithSignature("signatureClaim()"), data);
+    // SET UP
+
+    // Check 1155 contract ETH balance before
+    assertEq(address(artAddress).balance, 0 ether);
+
+    // send mint fee plus extra 0.1 ETH
+    vm.startPrank(participant, participant);
+    (bool success,) = artAddress.call{ value: phiFactory.getArtMintFee(artId, 1) + 0.1 ether }(payload);
+    require(success, "1155 artAddress.call failed");
+
+    // Check 1155 contract ETH balance, refund sent here instead
+    assertEq(address(artAddress).balance, 0.1 ether);
+}
+```
 
 ## Recommendation
 
@@ -80,8 +110,3 @@ Example direction:
 ```
 
 This ensures refunds always go to the real user regardless of how the claim was initiated.
-
----
-
-**Status:** Open  
-**Tags:** `#refund` `#msg-sender` `#batch-claim` `#medium-severity`
